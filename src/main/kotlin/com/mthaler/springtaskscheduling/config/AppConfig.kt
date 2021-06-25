@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 
 @Configuration
-@Import({DataServiceConfig.class})
+@Import(DataServiceConfig::class)
 @EnableScheduling
 class AppConfig {
 
