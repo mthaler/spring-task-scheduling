@@ -1,10 +1,13 @@
 package com.mthaler.springtaskscheduling.config
 
+import org.apache.commons.dbcp2.BasicDataSource
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.PropertySource
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
@@ -21,15 +24,32 @@ import javax.sql.DataSource
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.mthaler.springtaskscheduling.repos"])
 @ComponentScan(basePackages  = ["com.mthaler.springtaskscheduling"] )
+@PropertySource("classpath:db/jdbc.properties")
 class DataServiceConfig {
+
+    @Value("\${driverClassName}")
+    private val driverClassName: String? = null
+
+    @Value("\${url}")
+    private val url: String? = null
+
+    @Value("\${username}")
+    private val username: String? = null
+
+    @Value("\${password}")
+    private val password: String? = null
 
     @Bean
     fun dataSource(): DataSource {
         return try {
-            val dbBuilder = EmbeddedDatabaseBuilder()
-            dbBuilder.setType(EmbeddedDatabaseType.H2).build()
+            val dataSource = BasicDataSource()
+            dataSource.driverClassName = driverClassName
+            dataSource.url = url
+            dataSource.username = username
+            dataSource.password = password
+            dataSource
         } catch (e: Exception) {
-            logger.error("Embedded DataSource bean cannot be created!", e)
+            logger.error("DBCP DataSource bean cannot be created!", e)
             throw e
         }
     }
@@ -37,9 +57,10 @@ class DataServiceConfig {
     @Bean
     fun hibernateProperties(): Properties? {
         val hibernateProp = Properties()
-        hibernateProp["hibernate.dialect"] = "org.hibernate.dialect.H2Dialect"
+        hibernateProp["hibernate.dialect"] = "org.hibernate.dialect.PostgreSQL9Dialect"
         hibernateProp["hibernate.hbm2ddl.auto"] = "create-drop"
-        //hibernateProp.put("hibernate.format_sql", true);
+        hibernateProp.put("hibernate.format_sql", true);
+        hibernateProp["hibernate.use_sql_comments"] = true
         hibernateProp["hibernate.show_sql"] = true
         hibernateProp["hibernate.max_fetch_depth"] = 3
         hibernateProp["hibernate.jdbc.batch_size"] = 10
@@ -60,7 +81,7 @@ class DataServiceConfig {
     @Bean
     fun entityManagerFactory(): EntityManagerFactory {
         val factoryBean = LocalContainerEntityManagerFactoryBean()
-        factoryBean.setPackagesToScan("com.apress.prospring5.ch11.entities")
+        factoryBean.setPackagesToScan("com.mthaler.springdatajpa")
         factoryBean.dataSource = dataSource()
         factoryBean.setJpaProperties(hibernateProperties()!!)
         factoryBean.jpaVendorAdapter = jpaVendorAdapter()
