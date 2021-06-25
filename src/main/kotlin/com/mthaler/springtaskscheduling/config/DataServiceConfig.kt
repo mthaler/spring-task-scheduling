@@ -9,8 +9,6 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.JpaVendorAdapter
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
@@ -81,7 +79,7 @@ class DataServiceConfig {
     @Bean
     fun entityManagerFactory(): EntityManagerFactory {
         val factoryBean = LocalContainerEntityManagerFactoryBean()
-        factoryBean.setPackagesToScan("com.mthaler.springdatajpa")
+        factoryBean.setPackagesToScan("com.mthaler.springtaskscheduling")
         factoryBean.dataSource = dataSource()
         factoryBean.setJpaProperties(hibernateProperties()!!)
         factoryBean.jpaVendorAdapter = jpaVendorAdapter()
