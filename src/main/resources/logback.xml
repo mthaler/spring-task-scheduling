@@ -13,6 +13,8 @@
 
     <logger name="com.mthaler.springtaskscheduling" level="debug"/>
 
+    <logger name="org.hibernate" level="off"/>
+
     <logger name="org.springframework" level="off"/>
 
     <root level="info">
